@@ -1,4 +1,4 @@
-# Spider-Man Shattered Dimensions: Remake - Deadpool Level
+# Spider-Man: Shattered Dimensions - Deadpool level remake
 
 ## a. Descrierea generală a jocului
 
