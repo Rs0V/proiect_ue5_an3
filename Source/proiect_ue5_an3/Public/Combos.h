@@ -17,11 +17,15 @@ struct FPhase
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float windowTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool onGround;
 	
 
 	FPhase():
 		waitTime(0.0f),
-		windowTime(0.5f)
+		windowTime(0.5f),
+		onGround(true)
 	{}
 };
 
@@ -68,9 +72,12 @@ class PROIECT_UE5_AN3_API UCombos : public UBlueprintFunctionLibrary
 	UFUNCTION(BlueprintCallable)
 	static void UpdateAttacks(float deltaTime, UPARAM(ref) TMap<FString, FAttack> &attacks);
 	
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, meta = (DefaultToSelf = "WorldContextObject"))
 	static bool CheckAttack(const UObject* WorldContextObject, UPARAM(ref) TMap<FString, FAttack>& attacks, FString attackName, int phase);
 
 	static bool GoToNextPhase(const UObject* WorldContextObject, FAttack& attack);
 
+	static bool onGround(const UObject* WorldContextObject);
+
+	static bool inAir(const UObject* WorldContextObject);
 };

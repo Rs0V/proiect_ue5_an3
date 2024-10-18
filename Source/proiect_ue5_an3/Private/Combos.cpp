@@ -2,6 +2,8 @@
 
 
 #include "Combos.h"
+#include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 
 void UCombos::UpdateAttacks(float deltaTime, UPARAM(ref) TMap<FString, FAttack> &attacks)
@@ -29,6 +31,22 @@ bool UCombos::CheckAttack(const UObject* WorldContextObject, UPARAM(ref)TMap<FSt
 	auto attack = attacks.Find(attackName);
 	if (attack) {
 		if (attack->currentPhase != phase) {
+			return false;
+		}
+
+		if (attack->phases[attack->currentPhase - 1].onGround == true
+		and onGround(WorldContextObject) == false) {
+			attack->currentPhase = 1;
+			attack->waitTimer = -1;
+			attack->windowTimer = -1;
+			return false;
+		}
+
+		if (attack->phases[attack->currentPhase - 1].onGround == false
+		and inAir(WorldContextObject) == false) {
+			attack->currentPhase = 1;
+			attack->waitTimer = -1;
+			attack->windowTimer = -1;
 			return false;
 		}
 
@@ -68,6 +86,34 @@ bool UCombos::GoToNextPhase(const UObject* WorldContextObject, FAttack& attack)
 			attack.windowTimer = current_phase.windowTime + current_phase.waitTime;
 
 			return true;
+		}
+	}
+	return false;
+}
+
+bool UCombos::onGround(const UObject* WorldContextObject)
+{
+	if (WorldContextObject) {
+		auto character = Cast<ACharacter>(WorldContextObject);
+		if (character) {
+			auto charMove = character->GetCharacterMovement();
+			if (charMove) {
+				return charMove->IsMovingOnGround();
+			}
+		}
+	}
+	return false;
+}
+
+bool UCombos::inAir(const UObject* WorldContextObject)
+{
+	if (WorldContextObject) {
+		auto character = Cast<ACharacter>(WorldContextObject);
+		if (character) {
+			auto charMove = character->GetCharacterMovement();
+			if (charMove) {
+				return !(charMove->IsMovingOnGround());
+			}
 		}
 	}
 	return false;
