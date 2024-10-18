@@ -11,6 +11,10 @@ void UCombos::UpdateAttacks(float deltaTime, UPARAM(ref) TMap<FString, FAttack> 
 	for (auto &attack_kv : attacks) {
 		auto &attack = attack_kv.Value;
 
+		if (attack.currentPhase == 0) {
+			continue;
+		}
+
 		if (attack.waitTimer > 0) {
 			attack.waitTimer -= deltaTime;
 		}
@@ -26,7 +30,7 @@ void UCombos::UpdateAttacks(float deltaTime, UPARAM(ref) TMap<FString, FAttack> 
 	}
 }
 
-bool UCombos::CheckAttack(const UObject* WorldContextObject, UPARAM(ref)TMap<FString, FAttack>& attacks, FString attackName, int phase)
+bool UCombos::CheckAttack(const UObject* WorldContextObject, UPARAM(ref)TMap<FString, FAttack>& attacks, FString attackName, int phase, bool conditions, bool cancelers)
 {
 	auto attack = attacks.Find(attackName);
 	if (attack) {
@@ -34,19 +38,25 @@ bool UCombos::CheckAttack(const UObject* WorldContextObject, UPARAM(ref)TMap<FSt
 			return false;
 		}
 
+		if (conditions != true) {
+			ResetAttack(*attack);
+			return false;
+		}
+
+		if (cancelers != false) {
+			ResetAttack(*attack);
+			return false;
+		}
+
 		if (attack->phases[attack->currentPhase - 1].onGround == true
 		and onGround(WorldContextObject) == false) {
-			attack->currentPhase = 1;
-			attack->waitTimer = -1;
-			attack->windowTimer = -1;
+			ResetAttack(*attack);
 			return false;
 		}
 
 		if (attack->phases[attack->currentPhase - 1].onGround == false
 		and inAir(WorldContextObject) == false) {
-			attack->currentPhase = 1;
-			attack->waitTimer = -1;
-			attack->windowTimer = -1;
+			ResetAttack(*attack);
 			return false;
 		}
 
@@ -66,6 +76,7 @@ bool UCombos::GoToNextPhase(const UObject* WorldContextObject, FAttack& attack)
 {
 	if (WorldContextObject) {
 		if (attack.currentPhase == attack.phases.Num()) {
+			ResetAttack(attack);
 			attack.currentPhase = 0;
 
 			FTimerHandle TimerHandle;
@@ -89,6 +100,13 @@ bool UCombos::GoToNextPhase(const UObject* WorldContextObject, FAttack& attack)
 		}
 	}
 	return false;
+}
+
+void UCombos::ResetAttack(FAttack& attack)
+{
+	attack.currentPhase = 1;
+	attack.waitTimer = -1;
+	attack.windowTimer = -1;
 }
 
 bool UCombos::onGround(const UObject* WorldContextObject)
@@ -117,4 +135,53 @@ bool UCombos::inAir(const UObject* WorldContextObject)
 		}
 	}
 	return false;
+}
+
+bool UCombos::all(const TArray<bool>& values)
+{
+	for (auto& value : values) {
+		if (value == false) {
+			return false;
+		}
+	}
+	return true;
+}
+
+bool UCombos::any(const TArray<bool>& values)
+{
+	for (auto &value : values) {
+		if (value == true) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool UCombos::one(const TArray<bool>& values)
+{
+	bool foundOne = false;
+	for (auto& value : values) {
+		if (value == true) {
+			if (foundOne == false) {
+				foundOne = true;
+			} else {
+				return false;
+			}
+		}
+	}
+	if (foundOne) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+bool UCombos::none(const TArray<bool>& values)
+{
+	for (auto& value : values) {
+		if (value == true) {
+			return false;
+		}
+	}
+	return true;
 }

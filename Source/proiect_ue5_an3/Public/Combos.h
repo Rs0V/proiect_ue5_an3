@@ -73,11 +73,25 @@ class PROIECT_UE5_AN3_API UCombos : public UBlueprintFunctionLibrary
 	static void UpdateAttacks(float deltaTime, UPARAM(ref) TMap<FString, FAttack> &attacks);
 	
 	UFUNCTION(BlueprintCallable, meta = (DefaultToSelf = "WorldContextObject"))
-	static bool CheckAttack(const UObject* WorldContextObject, UPARAM(ref) TMap<FString, FAttack>& attacks, FString attackName, int phase);
+	static bool CheckAttack(const UObject* WorldContextObject, UPARAM(ref) TMap<FString, FAttack>& attacks, FString attackName, int phase = 1, bool conditions = true, bool cancelers = false);
 
 	static bool GoToNextPhase(const UObject* WorldContextObject, FAttack& attack);
+
+	static void ResetAttack(FAttack& attack);
 
 	static bool onGround(const UObject* WorldContextObject);
 
 	static bool inAir(const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (ArrayParam = "values", ArrayTypeDependentParams = "values"))
+	static bool all(const TArray<bool>& values);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (ArrayParam = "values", ArrayTypeDependentParams = "values"))
+	static bool any(const TArray<bool>& values);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (ArrayParam = "values", ArrayTypeDependentParams = "values"))
+	static bool one(const TArray<bool>& values);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (ArrayParam = "values", ArrayTypeDependentParams = "values"))
+	static bool none(const TArray<bool>& values);
 };
