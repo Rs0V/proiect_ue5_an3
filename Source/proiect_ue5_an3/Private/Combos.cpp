@@ -137,51 +137,12 @@ bool UCombos::inAir(const UObject* WorldContextObject)
 	return false;
 }
 
-bool UCombos::all(const TArray<bool>& values)
+bool UCombos::one(bool A, bool B)
 {
-	for (auto& value : values) {
-		if (value == false) {
-			return false;
-		}
-	}
-	return true;
+	return A != B;
 }
 
-bool UCombos::any(const TArray<bool>& values)
+bool UCombos::none(bool A, bool B)
 {
-	for (auto &value : values) {
-		if (value == true) {
-			return true;
-		}
-	}
-	return false;
-}
-
-bool UCombos::one(const TArray<bool>& values)
-{
-	bool foundOne = false;
-	for (auto& value : values) {
-		if (value == true) {
-			if (foundOne == false) {
-				foundOne = true;
-			} else {
-				return false;
-			}
-		}
-	}
-	if (foundOne) {
-		return true;
-	} else {
-		return false;
-	}
-}
-
-bool UCombos::none(const TArray<bool>& values)
-{
-	for (auto& value : values) {
-		if (value == true) {
-			return false;
-		}
-	}
-	return true;
+	return A == B and A == false;
 }
