@@ -7,9 +7,6 @@
 #include "Combos.generated.h"
 
 
-//****************
-// PLAYER ATTACKS
-//****************
 USTRUCT(BlueprintType)
 struct FPhase
 {
@@ -64,80 +61,6 @@ struct FAttack
 };
 
 
-//***************
-// ENEMY ATTACKS
-//***************
-USTRUCT(BlueprintType)
-struct FEnemyPhase
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float telegraphTime;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float reengageTime;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float waitTime;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool onGround;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool passive;
-
-
-	FEnemyPhase() :
-		telegraphTime(0.5f),
-		reengageTime(0.5f),
-		waitTime(0.5f),
-		onGround(true),
-		passive(false)
-	{}
-};
-
-
-USTRUCT(BlueprintType)
-struct FEnemyAttack
-{
-	GENERATED_BODY()
-
-	UPROPERTY(BlueprintReadWrite)
-	int currentPhase;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FEnemyPhase> phases;
-
-	UPROPERTY(BlueprintReadWrite)
-	float telegraphTimer;
-
-	UPROPERTY(BlueprintReadWrite)
-	float reengageTimer;
-
-	UPROPERTY(BlueprintReadWrite)
-	float waitTimer;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float cooldownTime;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool canMoveWhileCooldown;
-
-
-	FEnemyAttack() :
-		currentPhase(1),
-		phases(),
-		telegraphTimer(-1.0f),
-		reengageTimer(-1.0f),
-		waitTimer(-1.0f),
-		cooldownTime(1.0f),
-		canMoveWhileCooldown(false)
-	{}
-};
-
-
-
 /**
  * 
  */
@@ -160,9 +83,15 @@ class PROIECT_UE5_AN3_API UCombos : public UBlueprintFunctionLibrary
 
 	static bool inAir(const UObject* WorldContextObject);
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (CommutativeAssociativeBinaryOperator = "true"))
-	static bool one(bool A, bool B);
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (ArrayParam = "values", ArrayTypeDependentParams = "values"))
+	static bool all(const TArray<bool>& values);
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (CommutativeAssociativeBinaryOperator = "true"))
-	static bool none(bool A, bool B);
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (ArrayParam = "values", ArrayTypeDependentParams = "values"))
+	static bool any(const TArray<bool>& values);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (ArrayParam = "values", ArrayTypeDependentParams = "values"))
+	static bool one(const TArray<bool>& values);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (ArrayParam = "values", ArrayTypeDependentParams = "values"))
+	static bool none(const TArray<bool>& values);
 };
