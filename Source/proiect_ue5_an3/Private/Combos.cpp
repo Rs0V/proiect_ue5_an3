@@ -30,7 +30,7 @@ void UCombos::UpdateAttacks(float deltaTime, UPARAM(ref) TMap<FString, FAttack> 
 	}
 }
 
-bool UCombos::CheckAttack(const UObject* WorldContextObject, UPARAM(ref)TMap<FString, FAttack>& attacks, FString attackName, int phase, bool conditions, bool cancelers)
+bool UCombos::CheckAttack(const UObject* WorldContextObject, UPARAM(ref)TMap<FString, FAttack> &attacks, FString attackName, int phase, bool conditions, bool cancelers)
 {
 	auto attack = attacks.Find(attackName);
 	if (attack) {
@@ -72,7 +72,7 @@ bool UCombos::CheckAttack(const UObject* WorldContextObject, UPARAM(ref)TMap<FSt
 	return false;
 }
 
-bool UCombos::GoToNextPhase(const UObject* WorldContextObject, FAttack& attack)
+bool UCombos::GoToNextPhase(const UObject* WorldContextObject, FAttack &attack)
 {
 	if (WorldContextObject) {
 		if (attack.currentPhase == attack.phases.Num()) {
@@ -102,7 +102,7 @@ bool UCombos::GoToNextPhase(const UObject* WorldContextObject, FAttack& attack)
 	return false;
 }
 
-void UCombos::ResetAttack(FAttack& attack)
+void UCombos::ResetAttack(FAttack &attack)
 {
 	attack.currentPhase = 1;
 	attack.waitTimer = -1;
@@ -137,51 +137,13 @@ bool UCombos::inAir(const UObject* WorldContextObject)
 	return false;
 }
 
-bool UCombos::all(const TArray<bool>& values)
+void UCombos::CompleteEnemyAttackPhase(UPARAM(ref)TMap<FString, FEnemyAttack>& attacks, FString attackName, int phase)
 {
-	for (auto& value : values) {
-		if (value == false) {
-			return false;
-		}
+	auto& enemy_phase = attacks.Find(attackName)->phases[phase];
+	if (enemy_phase.custom == true) {
+		enemy_phase.completed = true;
 	}
-	return true;
-}
-
-bool UCombos::any(const TArray<bool>& values)
-{
-	for (auto &value : values) {
-		if (value == true) {
-			return true;
-		}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("Cannot use 'CompleteEnemyAttackPhase' function while 'custom' property is set to 'false'."));
 	}
-	return false;
-}
-
-bool UCombos::one(const TArray<bool>& values)
-{
-	bool foundOne = false;
-	for (auto& value : values) {
-		if (value == true) {
-			if (foundOne == false) {
-				foundOne = true;
-			} else {
-				return false;
-			}
-		}
-	}
-	if (foundOne) {
-		return true;
-	} else {
-		return false;
-	}
-}
-
-bool UCombos::none(const TArray<bool>& values)
-{
-	for (auto& value : values) {
-		if (value == true) {
-			return false;
-		}
-	}
-	return true;
 }
