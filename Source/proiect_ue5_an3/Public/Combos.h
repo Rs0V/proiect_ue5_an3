@@ -189,4 +189,5 @@ class PROIECT_UE5_AN3_API UCombos : public UBlueprintFunctionLibrary
 
 	UFUNCTION(BlueprintCallable)
 	void CompleteEnemyAttackPhase(UPARAM(ref) TMap<FString, FEnemyAttack>& attacks, FString attackName, int phase);
+	
 };
